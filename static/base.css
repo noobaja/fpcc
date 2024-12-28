@@ -1,0 +1,275 @@
+/* Import Google Font cdn link */
+@import url("https://fonts.googleapis.com/css2? family=Poppins:wght@400;600&display=swap");
+* {
+    margin: 0; 
+    padding: 0;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+    font-family: "poppins", sans-serif;
+}
+html {
+    max-height: fit-content;
+}
+
+body {
+    display: flex;
+}
+.sidebar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 110px; /* Lebar default */
+    height: 100vh;
+    padding: 0 1.7rem;
+    color: #fff;
+    overflow: hidden;
+    background: rgba(113, 99, 186, 255);
+    transition: width 0.5s ease-in-out;
+}
+
+.sidebar:hover {
+    width: 240px; /* Lebar saat di-hover */
+}
+
+.menu a span {
+    display: none; /* Sembunyikan teks saat sidebar sempit */
+}
+
+.sidebar:hover .menu a span {
+    display: inline; /* Tampilkan teks saat sidebar diperbesar */
+}
+
+.logo {
+    height: 2px;
+    padding: 4px; 
+}
+.menu { 
+    height: 88%;
+    position: relative;
+    list-style: none;
+    padding: 0;
+}
+.menu li {
+    padding: 1rem;
+    margin: 8px 0;
+    border-radius: 8px;
+    transition: all 0.5s ease-in-out;
+}
+.menu li:hover,
+.active {
+    background: #e0e0e0;
+}
+.menu li {
+    padding: 1rem;
+    margin: 8px 0;
+    border-radius: 8px;
+    transition: all 0.5s ease-in-out;
+}
+
+.menu li:hover,
+.menu li.active {
+    background: #e0e0e0;
+    width: 120%;       /* Pastikan background hover mengambil lebar penuh */
+    padding-left: 1.5rem; /* Opsional: Tambahkan padding kiri untuk kesan dinamis */
+}
+.menu li:first-child a {
+    width: 120%;  /* Pastikan mencakup seluruh lebar */
+}
+
+.menu a {
+    color: #fff;
+    font-size: 14px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    width: 120%; /* Buat elemen <a> mengambil seluruh lebar list item */
+}
+
+.logout {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100px;
+}
+
+
+/* **** main body section **** */
+.main--content{
+    position: relative;
+    background: #ebe9e9;
+    width: 100%;
+    padding: 1rem;
+
+}
+
+.header--wrapper img{
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+.header--wrapper {
+    display: flex;
+    justify-content: space-between; /* Memisahkan konten ke kiri dan kanan */
+    align-items: center;
+    flex-wrap: wrap; /* Agar elemen tidak tumpang tindih pada perangkat kecil */
+    background: #fff;
+    border-radius: 10px;
+    padding: 10px 2rem;
+    margin-bottom: 1rem;
+    position: relative;
+}
+.header--title{
+    color: rgba(113, 99, 186, 255);
+}
+.user--info{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+/* Gaya untuk kolom pencarian */
+.search--box {
+    background-color: rgb(237, 237, 237);
+    border-radius: 15px;
+    color: rgba(113, 99, 186, 255);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    width: 250px;  /* Tentukan lebar yang lebih pendek */
+    max-width: 100%;  /* Agar tetap responsif di perangkat kecil */
+}
+
+/* Lebar input di dalam kolom pencarian */
+.search--box {
+    background-color: rgb(237, 237, 237);
+    border-radius: 15px;
+    color: rgba(113, 99, 186, 255);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    width: 250px;  /* Tentukan lebar yang lebih pendek */
+    max-width: 100%;  /* Agar tetap responsif di perangkat kecil */
+}
+
+
+.schedule-section {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin: 1rem 0;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.schedule-section h3 {
+    color: rgba(113, 99, 186, 255);
+}
+.schedule-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.schedule-section input, 
+.schedule-section button {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+.schedule-section button {
+    background-color: rgba(113, 99, 186, 255);
+    color: white;
+    cursor: pointer;
+}
+.schedule-section button:hover {
+    background-color: #8c78d9;
+}
+.schedule-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+.schedule-section ul li {
+    background: #f3f3f3;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+.schedule-section {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+#jadwal {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+#jadwal.show {
+    display: block;
+    opacity: 1;
+}
+/* Gaya untuk informasi jadwal */
+.schedule-info {
+    margin-bottom: 10px;  /* Memberi jarak antara informasi jadwal dan tombol hapus */
+}
+
+/* Gaya tombol hapus */
+.delete-button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block; /* Agar tombol berada di bawah */
+    margin-top: 5px;  /* Memberikan spasi di atas tombol */
+    width: 100%; /* Tombol menggunakan lebar penuh */
+}
+
+.delete-button:hover {
+    background-color: #e60000;
+}
+
+
+/* Tombol kembali (back button) di sebelah kanan */
+.back-button {
+    position: absolute;  /* Agar bisa ditempatkan di dalam header */
+    top: 50%;  /* Posisikan vertikal di tengah */
+    left: 20px;  /* Posisikan ke kiri */
+    transform: translateY(-50%);  /* Posisikan secara tepat di tengah vertikal */
+    background: rgba(113, 99, 186, 255); /* Warna latar belakang tombol */
+    border-radius: 50%;  /* Bentuk bulat */
+    padding: 10px;
+    color: white;
+    z-index: 1000;  /* Pastikan tombol berada di atas elemen lainnya */
+}
+
+.back-button i {
+    font-size: 1rem;  /* Ukuran ikon */
+}
+
+.back-button:hover {
+    background-color: #8c78d9;  /* Warna saat hover */
+}
+
+/* Styling untuk header agar tombol kembali dan pencarian berada dalam satu baris */
+.header--wrapper {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    background: #fff;
+    border-radius: 10px;
+    padding: 10px 2rem;
+    margin-bottom: 1rem;
+}
+
+
+
+
+

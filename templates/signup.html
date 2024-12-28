@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign up</title>
+    <link rel="icon" type="image/vnd.microsoft.icon" href="https://www.amikomsolo.ac.id/wp-content/uploads/2020/01/logo-amikom-surakarta-1.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #d7a3e7; /* Light gray background */
+        }
+
+        .register-form {
+            opacity: 0; /* Start transparent */
+            transform: translateY(-20px); /* Move up */
+            transition: opacity 0.5s ease, transform 1.5s ease; /* Transition for opacity and transform */
+            width: 400px;
+            padding: 25px;
+            background-color: #e4cffc;
+            border-radius: 10px;
+            color: #1a2221;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .register-form.show {
+            opacity: 1; /* Become visible */
+            transform: translateY(0); /* Return to normal position */
+        }
+
+        .register-form .form-control {
+            border: 2px solid #b790ff;
+            background-color: #ffffff;
+            color: #1a2221;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        .register-form .btn-primary {
+            background-color: #b790ff;
+            border: none;
+            color: #ffffff;
+            border-radius: 10px;
+            margin-top: 10px;
+            width: 100%; /* Button fills the width of the column */
+        }
+
+        .register-form .form-link {
+            color: #b790ff;
+            text-decoration: none;
+        }
+
+        .register-form .form-link:hover {
+            text-decoration: underline;
+        }
+        /* Flash message styling */
+        .flash-messages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 300px;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            animation: fade-in-out 4s ease-in-out forwards;
+        }
+
+        .alert {
+            padding: 15px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            color: #fff;
+            font-size: 14px;
+        }
+        .alert-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .alert-error {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        @keyframes fade-in-out {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            10%, 90% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}" role="alert">
+                            <p style="color: red;">{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+    <div class="register-form">
+        <form method="POST" action="{{ url_for('signup') }}">
+            <h3 class="text-center">Create New Account</h3>
+            <div class="form-group">
+                <input type="text" id="nama_lengkap" name="nama_lengkap" class="form-control" placeholder="Full Name" required>
+            </div>
+            <div class="form-group">
+                <input type="email" id="email" name="email" class="form-control" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="confirm-password" name="confirm_password" class="form-control" placeholder="Confirm Password" required>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-block">Sign up</button>
+            </div>
+            <div class="form-footer text-center">
+                <p>Already have an account? <a href="{{ url_for('login') }}" class="form-link">Log in</a></p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.querySelector(".register-form");
+            form.classList.add("show");
+        });
+        
+        // Javascript to Auto Remove Flash Message
+        document.addEventListener('DOMContentLoaded', () => {
+        const flashMessages = document.querySelectorAll('.flash-messages');
+        setTimeout(() => {
+            flashMessages.forEach(message => {
+                message.style.display = 'none';
+            });
+        }, 4000); // Hides after 4 seconds
+        });
+    </script>
+</body>
+</html>

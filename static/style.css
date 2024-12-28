@@ -1,0 +1,81 @@
+html, body{
+    height: 100%;
+    background-color: #1a2221 !important;
+}
+
+.text-center {
+    color: #1a2221; /* Warna teks di tengah gelap untuk kontras */
+}
+
+.form-label {
+    color: #1a2221; /* Warna label gelap */
+}
+
+.btn-primary {
+    color: #ffffff; /* Teks tombol putih */
+}
+
+.form-check-label {
+    color: #1a2221; /* Warna label checkbox gelap */
+}
+
+.submit {
+    color: black; /* Warna teks untuk submit */
+}
+
+.global-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #d7a3e7;
+}
+
+.login-form {
+    width: 380px;
+    padding: 20px;
+    background-color: #b790ff; /* Warna ungu muda untuk kolom login */
+    border-radius: 10px;
+    color: #1a2221; /* Teks berwarna gelap untuk kontras */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Efek bayangan untuk kedalaman */
+}
+
+.form-control {
+    border: 2px solid #fb9b9b; /* Border pink untuk input */
+    background-color: #ffffff; /* Warna latar belakang input putih */
+    color: #1a2221; /* Teks input berwarna gelap */
+    border-radius: 10px; /* Sudut input melengkung */
+    margin-bottom: 25px; /* Jarak bawah input */
+}
+
+.form-control:focus {
+    outline: none; /* Menghilangkan outline */
+    border: 2px solid #fb9b9b; /* Border pink saat fokus */
+    background-color: #ffffff; /* Warna latar belakang tetap putih saat fokus */
+    color: #1a2221; /* Teks tetap berwarna gelap saat fokus */
+}
+
+.btn-primary {
+    background-color: #fb9b9b; /* Warna tombol login */
+    border: none;
+    color: #1a2221; /* Teks tombol berwarna gelap */
+    transform: translateY(10px); /* Efek elevasi */
+    font-size: 14px; /* Ukuran font tombol */
+    border-radius: 10px; /* Sudut tombol melengkung */
+}
+
+.form-link {
+    color: #000000; /* Warna link */
+    text-decoration: none; /* Menghilangkan garis bawah */
+}
+
+.form-link:hover {
+    text-decoration: underline; /* Garis bawah saat hover */
+}
+
+.card-title {
+    font-weight: 900; /* Ketebalan font judul */
+    padding-top: 20px; /* Jarak atas judul */
+}
+
+

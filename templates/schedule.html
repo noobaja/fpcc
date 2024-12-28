@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icon/IKON.ico') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+    <!-- Font Awesome Cdn link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #e9ecef;
+        }
+
+        table tr:nth-child(even) {
+            
+            background-color: #f8f9fa;
+        }
+
+        h2 {
+            color: #343a40;
+        }
+        /* Flash message styling */
+        .flash-messages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 300px;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            animation: fade-in-out 4s ease-in-out forwards;
+        }
+
+        .alert {
+            padding: 15px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            color: #fff;
+            font-size: 14px;
+        }
+        .alert-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .alert-error {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        @keyframes fade-in-out {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            10%, 90% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div id="flash-container">
+            {% for category, message in messages %}
+                <div class="flash-messages alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="sidebar">
+        <ul class="menu">
+            <li>
+                <a href="/dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="logout">
+                <a href="/logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+            <li>
+                <a href="/assignments"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+            </li>
+            <li>
+                <a href="/discussion">
+                    <i class="fas fa-comments"></i>
+                    <span>Discussion</span>
+                </a>
+            </li>
+
+        </ul>
+        
+    </div>
+    <div class="main--content">
+        <!-- Header Section -->
+        <div class="header--wrapper">
+            <div class="header--title">
+                <h2>Schedule</h2>
+            </div>
+        </div>
+    
+        <!-- Form Section -->
+        <div class="form-section" style="margin-top: 20px; max-width: 600px; margin-left: auto; margin-right: auto; padding: 20px; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px;">
+            <form method="POST" action="{{ url_for('schedule') }}" class="form-schedule">
+                {{ form.hidden_tag() }}
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="MK" style="display: block; font-weight: bold; margin-bottom: 8px;">Mata Kuliah:</label>
+                    {{ form.MK(class_='form-control', id='MK', placeholder='Masukkan nama mata kuliah', style='padding: 10px; border-radius: 6px; border: 1px solid #ccc; width: 100%;') }}
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="DL" style="display: block; font-weight: bold; margin-bottom: 8px;">Deadline:</label>
+                    <input 
+                        type="datetime-local" 
+                        id="DL" 
+                        name="DL" 
+                        class="form-control" 
+                        style="padding: 10px; border-radius: 6px; border: 1px solid #ccc; width: 100%;" 
+                        placeholder="Masukkan deadline (YYYY-MM-DD HH:MM)">
+                </div>                
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="isi" style="display: block; font-weight: bold; margin-bottom: 8px;">Isi Tugas:</label>
+                    {{ form.isi(class_='form-control', id='isi', placeholder='Masukkan deskripsi tugas', style='padding: 10px; border-radius: 6px; border: 1px solid #ccc; width: 100%;') }}
+                </div>
+                <div class="form-group" style="text-align: center;">
+                    <button type="submit" class="btn btn-primary" style="padding: 10px 20px; background-color: #007bff; color: #ffffff; border: none; border-radius: 6px; cursor: pointer;">Tambah Tugas</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript to Auto Remove Flash Messages -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const flashMessages = document.querySelectorAll('.flash-messages');
+            setTimeout(() => {
+                flashMessages.forEach(message => {
+                    message.style.display = 'none';
+                });
+            }, 4000); // Hides after 4 seconds
+        });
+    </script>
+    
+</body>
+</html>

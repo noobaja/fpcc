@@ -1,0 +1,83 @@
+html, body{
+    height: 100%;
+    background-color: #1a2221 !important;
+}
+.text-center{
+    color: #ffffff
+}
+.form-label{
+    color: #ffffff;
+}
+.btn-primary{
+    color: #ffffff;
+}
+.form-check-label{
+    color: #ffffff;
+}
+.submit{
+    color: black;
+}
+
+.global-container{
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff
+}
+
+
+
+
+.login-form{
+    width: 380px;
+    height: 450px;
+    padding: 20px;
+    background-color: #2a2a2a !important;
+    border-radius: 10px !important;
+}
+
+input[type="username"],
+input[type="password"]{
+    background: #1a2221;
+    color: #ffffff;
+    border: 2px solid #fb9b9b;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+input[type="username"]:focus,
+input[type="password"]:focus {
+   outline: none;
+   border: none;
+   background: #1a2221;
+   color: #ffffff;
+   margin: 0; 
+}
+
+.card-title{
+    font-weight: 900;
+    padding-top: 20px;
+}
+.btn{
+    background: #fb9b9b !important;
+    color: #1a2221 !important;
+    transform: translateY(10px);
+    font-size: 14px;
+    border-radius: 10px !important;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.card {
+    animation: slideIn 0.5s ease-out;
+}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icon/IKON.ico') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+    <!-- Font Awesome Cdn link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #e9ecef;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        h2 {
+            color: #343a40;
+        }
+
+        .no-tasks-message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 450px; /* Menyesuaikan tinggi agar teks berada di tengah */
+            font-size: 30px;
+            color: #6c757d;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <ul class="menu">
+            <li class="logout">
+                <a href="/logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+            <li>
+                <a href="/schedule" id="jadwalLink">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Schedule</span>
+                </a>
+            </li>
+            <li>
+                <a href="/assignments"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+            </li>
+            <li>
+                <a href="/discussion">
+                    <i class="fas fa-comments"></i>
+                    <span>Discussion</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main--content">
+        <div class="header--wrapper">
+            <div class="header--title">
+                <h2>Dashboard</h2>
+            </div>
+        </div>
+
+        {% if tasks %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Mata Kuliah</th>
+                    <th>Deadline</th>
+                    <th>Isi Tugas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.MK }}</td>
+                    <td>{{ task.DL }}</td>
+                    <td>{{ task.isi }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="no-tasks-message">
+            No Tasks Found.
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

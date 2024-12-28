@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussion</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icon/IKON.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+    <!-- Font Awesome CDN link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+    <div class="sidebar">
+        <ul class="menu">
+            <li>
+                <a href="/dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="logout">
+                <a href="/logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+            <li>
+                <a href="/schedule">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Schedule</span>
+                </a>
+            </li>
+            <li>
+                <a href="/assignments">
+                    <i class="fas fa-tasks"></i>
+                    <span>Assignments</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="main--content">
+        <div class="header--wrapper">
+            <h2>Discussion</h2>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-window">
+            {% for message in messages %}
+                <div class="message {% if message.is_current_user %}sent{% else %}received{% endif %}">
+                    <div class="message-content">
+                        <div class="message-header">
+                            {% if not message.is_current_user %}
+                                <strong>{{ message.nama_lengkap }}</strong>
+                            {% endif %}
+                            <span class="timestamp">{{ message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                        </div>
+                        <p>{{ message.message }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+
+        <!-- Chat Input Form -->
+        <form method="POST" action="/discussion" class="chat-input" enctype="multipart/form-data">
+            <textarea name="message" id="chatInput" placeholder="Write your message..." rows="2" required></textarea>
+            <button type="submit" class="small-button">Send</button>
+        </form>
+    </div>
+
+    <style>
+    
+    .chat-window {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        max-height: 500px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+    }
+
+
+    .message-header {
+        font-size: 12px;
+    }
+
+
+    .message {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+    }
+
+    .message.sent {
+        align-items: flex-end;
+    }
+
+    .message.received {
+        align-items: flex-start;
+    }
+
+    .message-content {
+        background: #f3f3f3;
+        border-radius: 8px;
+        padding: 10px;
+        max-width: 70%;
+        word-wrap: break-word;
+        position: relative;
+    }
+
+    .message.sent .message-content {
+        background: rgba(113, 99, 186, 255);
+        color: #fff;
+    }
+
+    .message.received .message-content {
+        background: #e0e0e0;
+    }
+
+    .timestamp {
+        font-size: 12px;
+        color: #aaa;
+        margin-top: 5px;
+    }
+    .chat-window {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        max-height: 500px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+    }
+
+    .message {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+    }
+
+    .message.received {
+        align-items: flex-start;
+    }
+
+    .message.sent {
+        align-items: flex-end;
+    }
+
+    .message-content {
+        background: #f3f3f3;
+        border-radius: 8px;
+        padding: 10px;
+        max-width: 70%;
+        word-wrap: break-word;
+        position: relative;
+    }
+
+    .message.received .message-content {
+        background: #e0e0e0;
+    }
+
+    .message.sent .message-content {
+        background: rgba(113, 99, 186, 255);
+        color: #fff;
+    }
+
+    .timestamp {
+        font-size: 12px;
+        color: #aaa;
+        margin-top: 5px;
+        align-self: flex-end;
+    }
+
+    .chat-input {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #fff;
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-input textarea {
+        flex: 1;
+        resize: none;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    .chat-input button {
+        background-color: rgba(113, 99, 186, 255);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        cursor: pointer;
+    }
+
+    .chat-input button:hover {
+        background-color: #8c78d9;
+    }
+
+    .active {
+        font-weight: bold;
+        color: #8c78d9;
+    }
+    </style>
+</body>
+</html>
