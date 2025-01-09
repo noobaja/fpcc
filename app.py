@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, session, url_for, flash
-from flask_socketio import SocketIO, emit
 from flask_wtf import FlaskForm
 from flask_mail import Mail, Message
 from flask import make_response
@@ -24,7 +23,7 @@ dbconnection = mysql.connector.connect(
     user='root',
     password='',
     host='localhost',
-    database='fpcc'
+    database='fpcc',
 )
 
 if dbconnection.is_connected():
@@ -39,10 +38,8 @@ def query_db(query, args=(), one=False):
     cursor.close()
     return (rv[0] if rv else None) if one else rv
 
-
 # Initialize Flask-Mail
 mail = Mail(app)
-
 
 # Set up email configuration
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Replace with your mail server
@@ -67,7 +64,6 @@ def send_verification_email(email, token):
     except Exception as e:
         print(f"Error sending email: {e}")
 
-
 # Function to send link reset (simulation)
 def send_link_reset(email, token):
     try:
@@ -78,12 +74,10 @@ def send_link_reset(email, token):
     except Exception as e:
         print(f"Error Sending email: {e}")
 
-
 # Function to generate token verifivation
 def generate_token_verifivation():
     return ''.join(random.choices(string.ascii_letters + string.digits, k=6))
     
-
 # Function to clean expired token
 def clean_expired_token():
     while True:
@@ -115,7 +109,6 @@ class ScheduleForm(FlaskForm):
     isi = TextAreaField('Isi Tugas', validators=[DataRequired()])
     submit = SubmitField('Tambah Tugas')
 
-
 # In-memory storage for messages (can be replaced with a database)
 messages = []
 
@@ -129,7 +122,9 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if 'user.id' in session:
+    if 'user.id' in session and session.get('role') == 'admin':
+        return redirect(url_for('admin_dashboard'))
+    elif 'user.id' in session and session.get('role') == 'user':
         return redirect(url_for('dashboard'))
     
     if request.method == 'POST':
@@ -148,13 +143,15 @@ def login():
             session.permanent = True
             session['user.id'] = user['user_id']
             session['role'] = user['role']
-            return redirect(url_for('dashboard'))
+            if user['role'] == 'admin':
+                return redirect(url_for('admin_dashboard'))
+            else:
+                return redirect(url_for('dashboard'))
         else:
             flash("Invalid email or password!", 'error')
             return render_template('login.html')
 
     return render_template('login.html')
-
 
 
 @app.route('/logout')
@@ -169,7 +166,6 @@ def logout():
 
     # Redirect to the login page with a success message
     return redirect(url_for('login'))
-
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -338,9 +334,71 @@ def reset_password(token):
     return render_template('reset_password.html', token=token)
 
 
+@app.route('/admin-dashboard')
+def admin_dashboard():
+    if 'user.id' in session and session.get('role') == 'admin':
+        try:
+            cursor = dbconnection.cursor(dictionary=True)
+
+            # Count users with role 'user'
+            cursor.execute('SELECT COUNT(*) AS user_counts FROM users WHERE role = %s AND email_verified = 1', ('user',))
+            user_counts = cursor.fetchone().get('user_counts', 0)
+
+            # Get data for all tasks from users with role 'user'
+            cursor.execute('''
+                           SELECT users.user_id, users.nama_lengkap, users.email, COUNT(schedules.schedule_id) AS task_count FROM users
+                           LEFT JOIN schedules ON users.user_id = schedules.user_id
+                           WHERE users.role = %s AND users.email_verified = 1
+                           GROUP BY users.user_id
+                           ''', ('user', ))
+            user_tasks = cursor.fetchall()
+
+        except mysql.connector.Error as err:
+            flash(f"Error fetching admin data: {err}", 'error')
+            user_counts = 0
+            user_tasks = []
+
+        finally:
+            if cursor:
+                cursor.close()
+
+        return render_template('admin_dashboard.html', user_counts=user_counts, user_tasks=user_tasks)
+
+    else:
+        return redirect(url_for('login'))
+    
+
+@app.route('/admin-users')
+def admin_users():
+    if 'user.id' in session and session.get('role') == 'admin':
+        try:
+            cursor = dbconnection.cursor(dictionary=True)
+
+            # Get data for all tasks from users with role 'user'
+            cursor.execute('''
+                           SELECT users.user_id, users.nama_lengkap, users.email FROM users
+                           WHERE users.role = %s AND users.email_verified = 1
+                           GROUP BY users.user_id
+                           ''', ('user', ))
+            user_tasks = cursor.fetchall()
+
+        except mysql.connector.Error as err:
+            flash(f"Error fetching admin data: {err}", 'error')
+            user_tasks = []
+
+        finally:
+            if cursor:
+                cursor.close()
+
+        return render_template('admin_users.html', user_tasks=user_tasks)
+
+    else:
+        return redirect(url_for('login'))
+    
+
 @app.route('/dashboard')
 def dashboard():
-    if 'user.id' in session:
+    if 'user.id' in session and session.get('role') == 'user':
         user_id = session['user.id'] # Ambil ID pengguna dari sesi
 
         try:
@@ -358,66 +416,73 @@ def dashboard():
 
         return render_template('dashboard.html', tasks=tasks)
     else:
+        if 'user.id' in session and session.get('role') == 'admin':
+            flash('Admin is not allowed to access the page.', 'error')
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('You are not logged in.', 'error')
+
         return redirect(url_for('login'))
     
 
 @app.route('/schedule', methods=['GET', 'POST'])
 def schedule():
-    if 'user.id' not in session:
+    if 'user.id' in session and session.get('role') == 'user':
+        form = ScheduleForm()
+
+        if request.method == 'POST':
+            if form.validate_on_submit():
+                MK = form.MK.data
+                DL_raw = form.DL.data
+                isi = form.isi.data
+                user_id = session['user.id'] # Get user id session
+
+                try:
+                    # Convert DL to datetime python
+                    DL = datetime.strptime(DL_raw, '%Y-%m-%dT%H:%M')
+
+                    # Insert to database
+                    cursor = dbconnection.cursor(dictionary=True)
+                    query = 'INSERT INTO schedules (MK, DL, isi, user_id) VALUES (%s, %s, %s, %s)'
+                    print(f"Executing query: {query} with values: {MK}, {DL}, {isi}")
+                    cursor.execute(query, (MK, DL, isi, user_id))
+                    dbconnection.commit()
+                    print("Data committed successfully")
+                    flash('Tugas Berhasil Ditambahkan!', 'success')
+                    return redirect(url_for('schedule'))
+                except mysql.connector.Error as err:
+                    print(f"Error: {err}")
+                    flash(f"Database Error: {err}", 'error')
+                except ValueError as ve:
+                    print(f"Value Error: {ve}")
+                    flash(f"Invalid date format: {DL_raw}", 'error')
+                finally:
+                    if cursor:
+                        cursor.close()
+            else:
+                print("Form is not valid:", form.errors)
+
+        # Fetch tasks from the database
+        try:
+            cursor = dbconnection.cursor(dictionary=True)
+            cursor.execute('SELECT * FROM schedules ORDER BY DL')
+            tasks = cursor.fetchall()
+        except mysql.connector.Error as err:
+            tasks = []
+            flash(f"Error fetching tasks: {err}", 'error')
+        finally:
+            if cursor:
+                cursor.close()
+
+        return render_template('schedule.html', form=form, tasks=tasks)
+    else:
+        flash('Admin is not allowed to access the page.', 'error')
         return redirect(url_for('login'))
-    
-    form = ScheduleForm()
-
-    if request.method == 'POST':
-        if form.validate_on_submit():
-            MK = form.MK.data
-            DL_raw = form.DL.data
-            isi = form.isi.data
-            user_id = session['user.id'] # Get user id session
-
-            try:
-                # Convert DL to datetime python
-                DL = datetime.strptime(DL_raw, '%Y-%m-%dT%H:%M')
-
-                # Insert to database
-                cursor = dbconnection.cursor(dictionary=True)
-                query = 'INSERT INTO schedules (MK, DL, isi, user_id) VALUES (%s, %s, %s, %s)'
-                print(f"Executing query: {query} with values: {MK}, {DL}, {isi}")
-                cursor.execute(query, (MK, DL, isi, user_id))
-                dbconnection.commit()
-                print("Data committed successfully")
-                flash('Tugas Berhasil Ditambahkan!', 'success')
-                return redirect(url_for('schedule'))
-            except mysql.connector.Error as err:
-                print(f"Error: {err}")
-                flash(f"Database Error: {err}", 'error')
-            except ValueError as ve:
-                print(f"Value Error: {ve}")
-                flash(f"Invalid date format: {DL_raw}", 'error')
-            finally:
-                if cursor:
-                    cursor.close()
-        else:
-            print("Form is not valid:", form.errors)
-
-    # Fetch tasks from the database
-    try:
-        cursor = dbconnection.cursor(dictionary=True)
-        cursor.execute('SELECT * FROM schedules ORDER BY DL')
-        tasks = cursor.fetchall()
-    except mysql.connector.Error as err:
-        tasks = []
-        flash(f"Error fetching tasks: {err}", 'error')
-    finally:
-        if cursor:
-            cursor.close()
-
-    return render_template('schedule.html', form=form, tasks=tasks)
 
     
 @app.route('/assignments')
 def assignments():
-    if 'user.id' in session:
+    if 'user.id' in session and session.get('role') == 'user':
         user_id = session['user.id'] # Get session user.id
 
         try:
@@ -435,12 +500,13 @@ def assignments():
                 
         return render_template('assignments.html', tasks=tasks)
     else:
+        flash('Admin is not allowed to access the page.', 'error')
         return redirect(url_for('login'))
     
 
 @app.route('/discussion', methods=['GET', 'POST'])
 def discussion():
-    if 'user.id' in session:
+    if 'user.id' in session and session.get('role') == 'user':
         user_id = session['user.id']
         username = session.get('username', 'Anonymous')
 
@@ -469,29 +535,60 @@ def discussion():
         return render_template('discussion.html', messages=messages)
 
     else:
-        flash('You need to log in to access this page.', 'error')
+        flash('Admin is not allowed to access the page.', 'error')
         return redirect(url_for('login'))
     
 
 @app.route('/delete-tasks/<int:schedule_id>', methods=['GET'])
 def delete_tasks(schedule_id):
-    if 'user.id' in session:
+    if 'user.id' in session and session.get('role') == 'user':
         user_id = session['user.id']
 
         # Validate task ID
         task = query_db('SELECT * FROM schedules WHERE schedule_id = %s AND user_id = %s', (schedule_id, user_id))
         if not task:
             flash('Task not found or unauthorized access.', 'error')
-            return redirect(url_for('assignments'))  # Rute yang benar
+            return redirect(url_for('assignments'))  # Correct Route
 
         # Delete task from the database
-        query_db('DELETE FROM schedules WHERE schedule_id = %s', (schedule_id,))  # Tabel yang benar
+        query_db('DELETE FROM schedules WHERE schedule_id = %s', (schedule_id,))  # Correct Table
         flash('Task deleted successfully.', 'success')
         return redirect(url_for('assignments'))
     else:
-        flash('You need to log in to access this page.', 'error')
+        flash('Admin is not allowed to access the page.', 'error')
         return redirect(url_for('login'))
+    
 
+@app.route('/delete-user/<int:user_id>', methods=['GET'])
+def delete_user(user_id):
+    if 'user.id' in session and session.get('role') == 'admin':
+
+        try:
+            cursor = dbconnection.cursor(dictionary=True)
+            # Validate user ID
+            cursor.execute('SELECT * FROM users WHERE user_id = %s', (user_id,))
+            user = cursor.fetchone()
+
+            if not user:
+                flash('User not found.', 'error')
+                return redirect(url_for('admin_dashboard'))
+        
+            # Delete user from the database
+            cursor.execute('DELETE FROM users WHERE user_id = %s', (user_id,))
+            dbconnection.commit()
+            flash('User deleted successfully.', 'success')
+        
+        except mysql.connector.Error as err:
+            flash(f'Error deleting user: {err}', 'error')
+
+        finally:
+            if cursor:
+                cursor.close()
+
+        return redirect(url_for('admin_dashboard'))
+    else:
+        return redirect(url_for('login'))
+    
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
