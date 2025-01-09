@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users Management</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icon/IKON.ico') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+    <!-- Font Awesome Cdn link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+        /* Flash message styling */
+        .flash-messages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 300px;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            animation: fade-in-out 4s ease-in-out forwards;
+        }
+
+        .alert {
+            padding: 15px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            color: #fff;
+            font-size: 14px;
+        }
+        .alert-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .alert-error {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        @keyframes fade-in-out {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            10%, 90% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            margin-top: 20px;
+        }
+        table th, table td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: center;
+        }
+        table th {
+            background-color: #e9ecef;
+        }
+        table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        h2 {
+            color: #343a40;
+        }
+        .no-tasks-message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 450px;
+            font-size: 30px;
+            color: #6c757d;
+            text-align: center;
+        }
+        .btn i {
+            font-size: 18px;
+        }
+        .btn-danger i {
+            color: red;
+        }
+        .btn-primary i {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div id="flash-container">
+            {% for category, message in messages %}
+                <div class="flash-messages alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="sidebar">
+        <ul class="menu">
+            <li>
+                <a href="/admin-dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="logout">
+                <a href="/logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin-reports">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main--content">
+        <div class="header--wrapper">
+            <div class="header--title">
+                <h2>Users Management</h2>
+            </div>
+        </div>
+
+        {% if user_tasks %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nama Lengkap</th>
+                    <th>Email</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in user_tasks %}
+                <tr>
+                    <td>{{ user.nama_lengkap }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        <a href="{{ url_for('delete_user', user_id=user.user_id) }}" class="btn btn-danger" title="Delete Task">
+                            <i class="fas fa-check"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="no-tasks-message">
+            No Users Found.
+        </div>
+        {% endif %}
+        </div>
+    </div>
+
+    <!-- JavaScript to Auto Remove Flash Messages -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const flashMessages = document.querySelectorAll('.flash-messages');
+            setTimeout(() => {
+                flashMessages.forEach(message => {
+                    message.style.display = 'none';
+                });
+            }, 4000); // Hides after 4 seconds
+        });
+    </script>
+    
+</body>
+</html>
